@@ -1624,6 +1624,10 @@ def whitespace(leaf: Leaf, *, complex_subscript: bool) -> str:  # noqa C901
     t = leaf.type
     p = leaf.parent
     v = leaf.value
+
+    if t == token.EQUAL:
+        return SPACE
+
     if t in ALWAYS_NO_SPACE:
         return NO
 
@@ -1654,20 +1658,7 @@ def whitespace(leaf: Leaf, *, complex_subscript: bool) -> str:  # noqa C901
             return SPACE
 
         if prevp.type == token.EQUAL:
-            if prevp.parent:
-                if prevp.parent.type in {
-                    syms.arglist,
-                    syms.argument,
-                    syms.parameters,
-                    syms.varargslist,
-                }:
-                    return NO
-
-                elif prevp.parent.type == syms.typedargslist:
-                    # A bit hacky: if the equal sign has whitespace, it means we
-                    # previously found it's a typed argument.  So, we're using
-                    # that, too.
-                    return prevp.prefix
+            return SPACE
 
         elif prevp.type in STARS:
             if is_vararg(prevp, within=VARARGS_PARENTS | UNPACKING_PARENTS):
@@ -1759,7 +1750,7 @@ def whitespace(leaf: Leaf, *, complex_subscript: bool) -> str:  # noqa C901
             if not prevp or prevp.type == token.LPAR:
                 return NO
 
-        elif prev.type in {token.EQUAL} | STARS:
+        elif prev.type in STARS:
             return NO
 
     elif p.type == syms.decorator:
@@ -2501,7 +2492,7 @@ def normalize_string_prefix(leaf: Leaf, remove_u_prefix: bool = False) -> None:
 
 
 def normalize_string_quotes(leaf: Leaf) -> None:
-    """Prefer double quotes but only if it doesn't cause more escaping.
+    """Prefer single quotes but only if it doesn't cause more escaping.
 
     Adds or removes backslashes as appropriate. Doesn't parse and fix
     strings nested in f-strings (yet).
@@ -2515,12 +2506,12 @@ def normalize_string_quotes(leaf: Leaf) -> None:
     elif value[:3] == "'''":
         orig_quote = "'''"
         new_quote = '"""'
-    elif value[0] == '"':
-        orig_quote = '"'
-        new_quote = "'"
-    else:
+    elif value[0] == "'":
         orig_quote = "'"
         new_quote = '"'
+    else:
+        orig_quote = '"'
+        new_quote = "'"
     first_quote_pos = leaf.value.find(orig_quote)
     if first_quote_pos == -1:
         return  # There's an internal error
@@ -2561,8 +2552,8 @@ def normalize_string_quotes(leaf: Leaf) -> None:
     if new_escape_count > orig_escape_count:
         return  # Do not introduce more escaping
 
-    if new_escape_count == orig_escape_count and orig_quote == '"':
-        return  # Prefer double quotes
+    if new_escape_count == orig_escape_count and orig_quote == "'":
+        return  # Prefer single quotes
 
     leaf.value = f"{prefix}{new_quote}{new_body}{new_quote}"
 
