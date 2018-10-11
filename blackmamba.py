@@ -1696,7 +1696,7 @@ def whitespace(leaf: Leaf, *, complex_subscript: bool) -> str:  # noqa C901
 
     elif p.type == syms.varargslist:
         # lambdas
-        if prev and prev.type != token.COMMA:
+        if prev and prev.type not in (token.COMMA, token.EQUAL):
             return NO
 
     elif p.type == syms.typedargslist:
