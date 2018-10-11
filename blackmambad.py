@@ -4,7 +4,7 @@ from functools import partial
 import logging
 
 from aiohttp import web
-import black
+import blackmamba as black
 import click
 
 # This is used internally by tests to shut down the server prematurely

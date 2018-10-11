@@ -4,7 +4,7 @@ import re
 from setuptools import setup
 import sys
 
-assert sys.version_info >= (3, 6, 0), "black requires Python 3.6+"
+assert sys.version_info >= (3, 6, 0), "blackmamba requires Python 3.6+"
 from pathlib import Path  # noqa E402
 
 CURRENT_DIR = Path(__file__).parent
@@ -17,7 +17,7 @@ def get_long_description() -> str:
 
 
 def get_version() -> str:
-    black_py = CURRENT_DIR / "black.py"
+    black_py = CURRENT_DIR / "blackmamba.py"
     _version_re = re.compile(r"__version__\s+=\s+(?P<version>.*)")
     with open(black_py, "r", encoding="utf8") as f:
         match = _version_re.search(f.read())
@@ -26,7 +26,7 @@ def get_version() -> str:
 
 
 setup(
-    name="black",
+    name="blackmamba",
     version=get_version(),
     description="The uncompromising code formatter.",
     long_description=get_long_description(),
@@ -34,9 +34,9 @@ setup(
     keywords="automation formatter yapf autopep8 pyfmt gofmt rustfmt",
     author="Łukasz Langa",
     author_email="lukasz@langa.pl",
-    url="https://github.com/ambv/black",
+    url="https://github.com/mohtar/blackmamba",
     license="MIT",
-    py_modules=["black", "blackd"],
+    py_modules=["blackmamba", "blackmambad"],
     packages=["blib2to3", "blib2to3.pgen2"],
     package_data={"blib2to3": ["*.txt"]},
     python_requires=">=3.6",
@@ -57,5 +57,5 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Software Development :: Quality Assurance",
     ],
-    entry_points={"console_scripts": ["black=black:main", "blackd=blackd:main [d]"]},
+    entry_points={"console_scripts": ["blackmamba=blackmamba:main", "blackmambad=blackmambad:main [d]"]},
 )
